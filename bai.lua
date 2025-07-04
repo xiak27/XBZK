@@ -7,19 +7,17 @@ local scriptUrl = "https://raw.githubusercontent.com/xiak27/637/refs/heads/main/
 
 local function createAlert(message)
     local screenGui = Instance.new("ScreenGui")
-    local frame = Instance.new("Frame")
-    local textLabel = Instance.new("TextLabel")
-    local closeButton = Instance.new("TextButton")
-    
-    screenGui.Parent = player.PlayerGui
+    screenGui.Parent = player:WaitForChild("PlayerGui")
     screenGui.Name = "AccessAlert"
     
+    local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0, 300, 0, 200)
     frame.Position = UDim2.new(0.5, -150, 0.5, -100)
     frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     frame.BorderSizePixel = 0
     frame.Parent = screenGui
     
+    local textLabel = Instance.new("TextLabel")
     textLabel.Size = UDim2.new(0.9, 0, 0.7, 0)
     textLabel.Position = UDim2.new(0.05, 0, 0.1, 0)
     textLabel.BackgroundTransparency = 1
@@ -30,6 +28,7 @@ local function createAlert(message)
     textLabel.TextWrapped = true
     textLabel.Parent = frame
     
+    local closeButton = Instance.new("TextButton")
     closeButton.Size = UDim2.new(0.5, 0, 0.2, 0)
     closeButton.Position = UDim2.new(0.25, 0, 0.8, -20)
     closeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
@@ -50,7 +49,11 @@ local function checkAccess()
     end)
     
     if not success then
-        createAlert("无法获取授权列表\n错误: " .. response)
+        createAlert("⚠️ 无法获取授权列表 ⚠️\n\n"..
+                   "请检查：\n"..
+                   "1. 游戏设置中启用了HTTP服务\n"..
+                   "2. 网络连接正常\n"..
+                   "3. URL可访问")
         return
     end
     
@@ -70,13 +73,19 @@ local function checkAccess()
     end
     
     if isAuthorized then
-        loadstring(game:HttpGet(scriptUrl))()
+        local loadSuccess, loadResult = pcall(function()
+            return loadstring(game:HttpGet(scriptUrl))()
+        end)
+        
+        if not loadSuccess then
+            createAlert("⚠️ 脚本加载失败 ⚠️\n\n"..loadResult)
+        end
     else
         createAlert("⚠️ 访问被拒绝 ⚠️\n\n" ..
-                   player.Name .. " 未在授权列表中\n" ..
-                   "请联系管理员获取权限")
+                   player.Name .. " 未在授权列表中")
     end
 end
 
+player:WaitForChild("PlayerGui")
 task.wait(2)
 checkAccess()
