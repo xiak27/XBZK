@@ -1,91 +1,130 @@
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
 local player = Players.LocalPlayer
 
-local authUserUrl = "https://pastebin.com/raw/n2y94cnE"
-local scriptUrl = "https://raw.githubusercontent.com/xiak27/637/refs/heads/main/small%20empty%20script.lua"
+-- 设置白名单URL和远程脚本URL
+local WHITELIST_URL = "https://pastebin.com/raw/n2y94cnE"
+local REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/xiak27/637/refs/heads/main/small%20empty%20script.lua"
 
-local function createAlert(message)
+-- 创建弹窗UI的函数
+local function createPopup()
+    -- 创建UI元素
     local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "WhitelistPopup"
     screenGui.Parent = player:WaitForChild("PlayerGui")
-    screenGui.Name = "AccessAlert"
     
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 300, 0, 200)
-    frame.Position = UDim2.new(0.5, -150, 0.5, -100)
-    frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    frame.BorderSizePixel = 0
-    frame.Parent = screenGui
+    -- 背景遮罩
+    local background = Instance.new("Frame")
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundColor3 = Color3.new(0, 0, 0)
+    background.BackgroundTransparency = 0.5
+    background.Parent = screenGui
     
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(0.9, 0, 0.7, 0)
-    textLabel.Position = UDim2.new(0.05, 0, 0.1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.Text = message
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textLabel.Font = Enum.Font.Gotham
-    textLabel.TextSize = 18
-    textLabel.TextWrapped = true
-    textLabel.Parent = frame
+    -- 弹窗主体
+    local popupFrame = Instance.new("Frame")
+    popupFrame.Size = UDim2.new(0, 300, 0, 200)
+    popupFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    popupFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    popupFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    popupFrame.BorderSizePixel = 0
+    popupFrame.Parent = screenGui
     
-    local closeButton = Instance.new("TextButton")
-    closeButton.Size = UDim2.new(0.5, 0, 0.2, 0)
-    closeButton.Position = UDim2.new(0.25, 0, 0.8, -20)
-    closeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-    closeButton.Text = "关闭"
-    closeButton.Font = Enum.Font.GothamBold
-    closeButton.TextColor3 = Color3.white
-    closeButton.TextSize = 16
-    closeButton.Parent = frame
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = popupFrame
     
-    closeButton.MouseButton1Click:Connect(function()
+    -- 标题
+    local title = Instance.new("TextLabel")
+    title.Text = "白名单验证失败"
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 20
+    title.Size = UDim2.new(1, 0, 0, 50)
+    title.BackgroundTransparency = 1
+    title.Parent = popupFrame
+    
+    -- 内容
+    local content = Instance.new("TextLabel")
+    content.Text = "抱歉，你不在白名单中\n无法使用此功能"
+    content.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+    content.Font = Enum.Font.Gotham
+    content.TextSize = 16
+    content.TextWrapped = true
+    content.Size = UDim2.new(1, -40, 0, 80)
+    content.Position = UDim2.new(0, 20, 0, 50)
+    content.BackgroundTransparency = 1
+    content.Parent = popupFrame
+    
+    -- 按钮
+    local button = Instance.new("TextButton")
+    button.Text = "确定"
+    button.TextColor3 = Color3.new(1, 1, 1)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 18
+    button.Size = UDim2.new(0, 120, 0, 40)
+    button.Position = UDim2.new(0.5, -60, 1, -60)
+    button.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
+    button.Parent = popupFrame
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.Parent = button
+    
+    -- 按钮点击事件
+    button.MouseButton1Click:Connect(function()
         screenGui:Destroy()
+        player:Kick("请获取白名单后再尝试")
     end)
+    
+    -- 添加一点动画效果
+    popupFrame.Size = UDim2.new(0, 10, 0, 10)
+    popupFrame.Position = UDim2.new(0.5, -5, 0.5, -5)
+    popupFrame:TweenSize(
+        UDim2.new(0, 300, 0, 200),
+        Enum.EasingDirection.Out,
+        Enum.EasingStyle.Quint,
+        0.5
+    )
 end
 
-local function checkAccess()
+-- 安全获取白名单函数
+local function fetchWhitelist()
     local success, response = pcall(function()
-        return HttpService:GetAsync(authUserUrl, true)
+        return HttpService:GetAsync(WHITELIST_URL, true)
     end)
     
-    if not success then
-        createAlert("⚠️ 无法获取授权列表 ⚠️\n\n"..
-                   "请检查：\n"..
-                   "1. 游戏设置中启用了HTTP服务\n"..
-                   "2. 网络连接正常\n"..
-                   "3. URL可访问")
-        return
-    end
-    
-    local authorizedUsers = {}
-    for username in string.gmatch(response, "[^\r\n]+") do
-        table.insert(authorizedUsers, username:lower())
-    end
-    
-    local currentUser = player.Name:lower()
-    local isAuthorized = false
-    
-    for _, username in ipairs(authorizedUsers) do
-        if username == currentUser then
-            isAuthorized = true
-            break
+    if success then
+        local whitelist = {}
+        for username in response:gmatch("[^\r\n]+") do
+            whitelist[username:lower()] = true
         end
+        return whitelist
+    else
+        warn("获取白名单失败: " .. tostring(response))
+        return {}
+    end
+end
+
+-- 主执行逻辑
+coroutine.wrap(function()
+    -- 等待玩家数据加载完成
+    while not player:IsLoaded() do
+        wait(0.5)
     end
     
-    if isAuthorized then
-        local loadSuccess, loadResult = pcall(function()
-            return loadstring(game:HttpGet(scriptUrl))()
+    local whitelist = fetchWhitelist()
+    local currentUsername = player.Name:lower()
+    
+    if whitelist[currentUsername] then
+        -- 白名单用户：加载远程脚本
+        local success, err = pcall(function()
+            loadstring(game:HttpGet(REMOTE_SCRIPT_URL, true))()
         end)
-        
-        if not loadSuccess then
-            createAlert("⚠️ 脚本加载失败 ⚠️\n\n"..loadResult)
+        if not success then
+            warn("远程脚本加载失败: " .. tostring(err))
         end
     else
-        createAlert("⚠️ 访问被拒绝 ⚠️\n\n" ..
-                   player.Name .. " 未在授权列表中")
+        -- 非白名单用户：显示弹窗
+        createPopup()
     end
-end
-
-player:WaitForChild("PlayerGui")
-task.wait(2)
-checkAccess()
+end)()
