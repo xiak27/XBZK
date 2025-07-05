@@ -556,8 +556,7 @@ if savedKey then
         if success then
             verifyButton.Text = "验证成功!"
             container.Visible = false
-            background.Visible = false
-            
+            background.Visible = false            
 loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/285856839.lua"))()
         else
             verifyButton.Text = "验证卡密"
