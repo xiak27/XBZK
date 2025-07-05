@@ -627,8 +627,7 @@ verifyButton.MouseButton1Click:Connect(function()
             -- 等待2秒后关闭UI并执行脚本
             task.wait(2)
             container.Visible = false
-            background.Visible = false
-            
+            background.Visible = false           
 loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/285856839.lua"))()
         else
             verifyButton.Text = "验证卡密"
