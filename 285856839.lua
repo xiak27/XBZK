@@ -557,7 +557,7 @@ if savedKey then
             verifyButton.Text = "验证成功!"
             container.Visible = false
             background.Visible = false            
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/285856839.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/114514.lua"))()
         else
             verifyButton.Text = "验证卡密"
             statusLabel.Text = "保存的卡密已失效"
@@ -628,7 +628,7 @@ verifyButton.MouseButton1Click:Connect(function()
             task.wait(2)
             container.Visible = false
             background.Visible = false           
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/285856839.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CNHM/asg/refs/heads/main/114514.lua"))()
         else
             verifyButton.Text = "验证卡密"
             statusLabel.Text = "卡密验证失败"
